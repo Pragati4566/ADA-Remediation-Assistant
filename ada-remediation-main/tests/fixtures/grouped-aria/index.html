@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Grouped ARIA review fixture</title>
+</head>
+<body>
+  <main>
+    <h1>Grouped ARIA review fixture</h1>
+    <header>
+      <nav aria-label="Primary navigation">
+        <ul class="primary-menu" role="presentation">
+          <li role="presentation"><button type="button" role="menuitem" aria-setsize="2" aria-posinset="1">Products</button></li>
+          <li role="presentation"><button type="button" role="menuitem" aria-setsize="2" aria-posinset="2">Services</button></li>
+        </ul>
+      </nav>
+    </header>
+    <div class="uabb-fancy-text-prefix" aria-label="Prefix"></div>
+    <div class="uabb-fancy-text-suffix" aria-label="Suffix"></div>
+    <div class="fl-module fl-module-photo-gallery" aria-label="Photo gallery"></div>
+    <div class="fl-module fl-module-separator fl-node-example" aria-label="Separator">
+      <div class="fl-module-content fl-node-content">
+        <div class="fl-separator"></div>
+      </div>
+    </div>
+    <button id="account-disclosure" type="button" aria-expanded="false" aria-controls="account-actions">Account actions</button>
+    <div id="account-actions" hidden>
+      <button type="button"><span aria-hidden="true">×</span></button>
+    </div>
+    <div role="tablist" aria-label="Account information">
+      <button id="overview-tab" type="button" role="tab" aria-selected="true" aria-controls="overview-panel">Overview</button>
+      <button id="details-tab" type="button" role="tab" aria-selected="false" aria-controls="details-panel">Details</button>
+    </div>
+    <section id="overview-panel" role="tabpanel" aria-labelledby="overview-tab">Overview content</section>
+    <section id="details-panel" role="tabpanel" aria-labelledby="details-tab" hidden>
+      <button type="button"><span aria-hidden="true">×</span></button>
+    </section>
+    <button id="help-dialog-trigger" type="button" aria-haspopup="dialog" aria-controls="help-dialog">Open help</button>
+    <dialog id="help-dialog" aria-label="Help dialog">
+      <button type="button"><span aria-hidden="true">×</span></button>
+    </dialog>
+    <section id="featured-carousel" role="region" aria-roledescription="carousel" aria-label="Featured services">
+      <button id="previous-slide" type="button" aria-controls="featured-carousel">Previous slide</button>
+      <div id="featured-slide-one" role="group" aria-roledescription="slide" aria-label="1 of 2">
+        <p>Featured service one</p>
+      </div>
+      <div id="featured-slide-two" role="group" aria-roledescription="slide" aria-label="2 of 2" hidden>
+        <button type="button"><span aria-hidden="true">×</span></button>
+      </div>
+      <button id="next-slide" type="button" aria-controls="featured-carousel">Next slide</button>
+    </section>
+    <p><a href="/downloads/sample-menu.pdf">Download the sample menu (PDF)</a></p>
+  </main>
+  <script>
+    const disclosure = document.getElementById("account-disclosure");
+    const actions = document.getElementById("account-actions");
+    disclosure.addEventListener("click", () => {
+      const expanded = disclosure.getAttribute("aria-expanded") === "true";
+      disclosure.setAttribute("aria-expanded", String(!expanded));
+      actions.hidden = expanded;
+    });
+    const overviewTab = document.getElementById("overview-tab");
+    const detailsTab = document.getElementById("details-tab");
+    const overviewPanel = document.getElementById("overview-panel");
+    const detailsPanel = document.getElementById("details-panel");
+    detailsTab.addEventListener("click", () => {
+      overviewTab.setAttribute("aria-selected", "false");
+      detailsTab.setAttribute("aria-selected", "true");
+      overviewPanel.hidden = true;
+      detailsPanel.hidden = false;
+    });
+    overviewTab.addEventListener("click", () => {
+      overviewTab.setAttribute("aria-selected", "true");
+      detailsTab.setAttribute("aria-selected", "false");
+      overviewPanel.hidden = false;
+      detailsPanel.hidden = true;
+    });
+    const helpDialog = document.getElementById("help-dialog");
+    document.getElementById("help-dialog-trigger").addEventListener("click", () => helpDialog.showModal());
+    const firstSlide = document.getElementById("featured-slide-one");
+    const secondSlide = document.getElementById("featured-slide-two");
+    document.getElementById("next-slide").addEventListener("click", () => {
+      firstSlide.hidden = true;
+      secondSlide.hidden = false;
+    });
+    document.getElementById("previous-slide").addEventListener("click", () => {
+      firstSlide.hidden = false;
+      secondSlide.hidden = true;
+    });
+  </script>
+</body>
+</html>
