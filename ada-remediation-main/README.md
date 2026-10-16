@@ -1,97 +1,124 @@
-# ADA Remediation Assistant
+# ♿ ADA Remediation Assistant
 
-Find accessibility problems on a website, see exactly what failed, and get a concrete fix for each one. It runs on your computer; nothing is uploaded.
+Identify common accessibility issues on a website, inspect the evidence behind each finding, and get practical guidance for remediation. The tool is designed to support developers and QA engineers as they review accessibility issues and track fixes during development.
 
-![The dashboard after scanning the demo site: a navigation component with its failed condition, the fix, and the likely owner](docs/images/dashboard.png)
+![The dashboard showing accessibility findings and remediation guidance](docs/images/dashboard.png)
 
 > Automated scanning cannot certify ADA, WCAG, or Section 508 compliance. It does not replace keyboard testing, screen-reader testing, usability review, or evaluation by accessibility professionals and people with disabilities.
 
 ## Try it in two minutes
 
-You need Node.js 20 or newer.
+**Prerequisite:** Node.js 20 or newer.
+
+Clone your repository and open the project folder:
 
 ```bash
-git clone https://github.com/gerryglz/ada-remediation.git
-cd ada-remediation
+git clone https://github.com/Pragati4566/Accessibility-Test-Strategy.git
+cd Accessibility-Test-Strategy/accessibility-test-strategy-master
 npm install
 npx playwright install chromium
 ```
 
-Then, in two terminals:
+Start the demo site and dashboard in separate terminals.
+
+**Terminal 1 — demo website**
 
 ```bash
-npm run demo   # a small site with deliberate errors, on http://127.0.0.1:4180
-npm run ui     # the dashboard, on http://127.0.0.1:4173
+npm run demo
 ```
 
+The demo site runs at `http://127.0.0.1:4180`.
+
+**Terminal 2 — dashboard**
+
+```bash
+npm run ui
+```
+
+The dashboard runs at `http://127.0.0.1:4173`.
+
+Then:
+
 1. Open [http://127.0.0.1:4173](http://127.0.0.1:4173).
-2. Paste `http://127.0.0.1:4180/` and check **Crawl same-origin pages**.
-3. Select **Scan site**.
+2. Enter `http://127.0.0.1:4180/` as the target URL.
+3. Enable **Crawl same-origin pages** if you want to scan linked pages on the demo site.
+4. Select **Scan site** to start the scan.
 
-## What you get
+## What it provides
 
-- **Fix-first findings.** Each one opens on the failed condition and what to change, with the rendered HTML and a screenshot of the element.
-- **Grouping by component.** Seven menu links with the same problem are one item with one fix, not seven.
-- **An AI prompt per finding.** Paste it into a coding agent. It includes the evidence and the verification steps.
-- **A review record.** Mark findings as action required, accepted risk, or false positive, and work through a manual checklist for what tools cannot test.
-- **History and comparison.** Rescan later to see what is new, what remains, and what is resolved.
-- **Exports.** JSON, a self-contained HTML report, and SARIF for code scanning.
-- **More than the first paint.** Optional scans of menus, tabs, dialogs, and carousels, and of pages behind a login.
+- **Actionable findings:** Review the failed condition, supporting evidence, rendered HTML, and an element screenshot where available.
+- **Component-based grouping:** Related issues can be grouped so repeated instances are easier to review together.
+- **Remediation guidance:** Each finding provides practical suggestions and verification steps to help plan a fix.
+- **AI-ready prompts:** Copy a structured prompt with the issue details and checks for use with a coding assistant. No AI service is called by the application itself.
+- **Review workflow:** Classify findings as requiring action, accepted risk, or false positive, and record manual checks separately.
+- **Scan history and comparison:** Compare scan results over time to identify new, unresolved, and resolved findings.
+- **Report exports:** Export findings in supported formats, including JSON, HTML, and SARIF.
+- **Interactive and authenticated flows:** Where supported, scan additional UI states such as menus, tabs, dialogs, carousels, and pages behind a login.
 
-![A single finding: failed condition, what to change, contrast evidence, and the rendered HTML with the affected line highlighted](docs/images/finding.png)
+![An accessibility finding with remediation guidance, contrast evidence, and affected HTML](docs/images/finding.png)
 
 ## Scan your own site
 
-Build once with `npm run build`, then:
+Build the CLI before using it:
 
-| What you have | Command |
+```bash
+npm run build
+```
+
+Use the command that matches your target:
+
+| Use case | Command |
 | --- | --- |
-| One page | `node dist/cli.js scan-url https://example.com/page` |
-| A site to crawl | `node dist/cli.js scan-site https://example.com --max-pages 25` |
-| A local dev server | `node dist/cli.js scan-url http://localhost:3000` |
-| HTML files in a repository | `node dist/cli.js scan-repo .` |
-| A page behind a login | `node dist/cli.js scan-url URL --storage-state auth.json` |
+| Scan a single page | `node dist/cli.js scan-url https://example.com/page` |
+| Crawl a website | `node dist/cli.js scan-site https://example.com --max-pages 25` |
+| Scan a local development server | `node dist/cli.js scan-url http://localhost:3000` |
+| Scan HTML files in a repository | `node dist/cli.js scan-repo .` |
+| Scan a page using saved login state | `node dist/cli.js scan-url URL --storage-state auth.json` |
 
-Add `--format html --output report.html` to save a report, or `--wcag-level A`, `AA`, or `AAA` to change the target. The [guide](docs/GUIDE.md) covers every option.
+You can save an HTML report with `--format html --output report.html`. The CLI may also support WCAG target selection (`--wcag-level A`, `AA`, or `AAA`) and other options. Run the CLI help or consult the project guide for the options available in your version.
 
-## Use it in CI
+See the [project guide](docs/GUIDE.md) for scan methods, command options, reports, remediation workflows, baselines, and history.
 
-Fail a build when a serious finding appears:
+## Use it in continuous integration
+
+Accessibility scans can be added to a CI workflow to flag serious issues before changes are merged. For example, if supported by the CLI configuration:
 
 ```bash
 node dist/cli.js scan-repo . --fail-on serious
 ```
 
-A baseline lets an existing site fail only on new findings. See [the guide](docs/GUIDE.md#testing-method-7-test-in-ci-or-a-pull-request) and the [GitHub Actions example](docs/github-actions.yml).
+A baseline can help an existing project focus on new findings rather than blocking on every previously known issue. See the [CI testing guide](docs/GUIDE.md#testing-method-7-test-in-ci-or-a-pull-request) and the [GitHub Actions example](docs/github-actions.yml).
 
-## What it does not do
+## What automated scans cannot do
 
-- **It does not prove compliance.** Many WCAG criteria need a person. The dashboard's manual checklist lists them.
-- **It does not invent content.** No generated alt text, labels, or headings. Those need someone who knows the page.
-- **It does not run code from a scanned repository.**
+- They cannot prove full compliance with ADA, WCAG, or Section 508 requirements.
+- They cannot reliably decide whether alternative text, labels, instructions, or headings make sense in the page's context.
+- They cannot replace manual keyboard, screen-reader, and usability testing.
+- Remediation suggestions need human review, and changes must be retested to check for regressions.
 
-Only scan systems you own or are authorized to test.
+Only scan websites, applications, and repositories you own or are authorized to test.
 
-## Privacy
+## Privacy and local data
 
-- Scans run locally. URL scans send normal browser requests only to the pages being tested.
-- History is saved under `.ada-remediation/history` in your home directory. It can include page HTML and screenshots, so review it before sharing.
-- A login session file is used for one scan and never stored. Treat it as a secret.
-- No AI service is called. The AI prompts are text for you to paste elsewhere.
+- URL scans make browser requests to the pages being tested.
+- Scan history may be stored under `.ada-remediation/history` in your home directory and may include page HTML or screenshots. Review it before sharing.
+- Treat browser session files and authentication state as secrets. Do not commit them to a public repository.
+- The application generates prompts for optional use with a coding assistant; it does not call an AI service as part of that workflow.
+- Review the implementation and dependencies before describing the tool as fully offline or stating that no data leaves your computer.
 
 ## Documentation
 
-- [Guide](docs/GUIDE.md): the dashboard, every scan method, reports, fixes, baselines, and history.
-- [GitHub Actions example](docs/github-actions.yml): scan on every pull request.
+- [Project guide](docs/GUIDE.md): dashboard usage, scan methods, reports, fixes, baselines, and history.
+- [GitHub Actions example](docs/github-actions.yml): an example workflow for scanning pull requests.
 
-## Development
+## Development and tests
+
+Run the checks supported by your `package.json` scripts:
 
 ```bash
-npm run check      # typecheck, unit tests, build
-npm run test:e2e   # drives the dashboard in Chromium
-npm run test:a11y  # runs axe-core against the dashboard itself
+npm run check
+npm run test:e2e
+npm run test:a11y
 ```
 
-## License
-
-MIT
+`npm run check` is intended for type checking, unit tests, and the build; `npm run test:e2e` runs end-to-end checks in Chromium; and `npm run test:a11y` runs accessibility checks against the dashboard. Confirm the scripts in `package.json` if your local setup differs.
